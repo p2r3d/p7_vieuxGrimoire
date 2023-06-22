@@ -22,8 +22,6 @@ exports.postBook = (req, res, next) => {
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });
     // Enregistrement dans la base de données
-      console.log('avant save');
-
     book.save()
         .then(() => { res.status(201).json({ message: 'Livre enregistré !' }) })
         .catch(error => { res.status(400).json( { error }) })
@@ -54,7 +52,7 @@ exports.modifyBook = (req, res, next) => {
        });
 };
 
-// DELETE
+// DELETE : suppression d'un livre
 exports.deleteBook = (req, res, next) => {
    Book.findOne({ _id: req.params.id})
        .then(book => {
@@ -80,9 +78,18 @@ exports.getOneBook = (req, res, next) => {
     .catch((error) => {res.status(404).json({error: error});});
 };
 
-// GET : affichade de tous les livres
+// GET : affichage de tous les livres
 exports.getAllBooks = (req, res, next) => {
+  // récupération de tous les livres de la BD
   Book.find()
     .then((books) => {res.status(200).json(books);})
     .catch((error) => {res.status(400).json({error: error});});
 };
+
+// GET : affichage des livres les mieux notés
+exports.getBestRating = (req, res, next) => {
+  // recherche dans la base de données, tri en ordre décroissant et limité à 3 résultats
+  Book.find().sort({ averageRating: -1 }).limit(3)
+  .then ((books) => {res.status(200).json(books);})
+  .catch((error) => {res.status(400).json({error: error});});
+}

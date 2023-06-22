@@ -13,10 +13,10 @@ const sharpImg = require('../middleware/sharp-config');
 const booksCtrl = require('../controllers/books');
 
 // différentes routes concernant les livres
-router.get('/', booksCtrl.getAllBooks);
+router.get('/bestrating', booksCtrl.getBestRating);
+router.get('/', multer,booksCtrl.getAllBooks);
 router.post('/', auth, multer, sharpImg, booksCtrl.postBook);
 router.get('/:id', multer,booksCtrl.getOneBook);
-//router.get('/bestrating', multer,booksCtrl.getBestRating);
 router.put('/:id', auth, multer, booksCtrl.modifyBook);
 router.delete('/:id',auth, booksCtrl.deleteBook);
 module.exports = router;  
