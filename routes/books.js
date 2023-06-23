@@ -7,16 +7,15 @@ const auth = require('../middleware/auth');
 // gestion des fichiers
 const multer = require('../middleware/multer-config');
 // redimensionnement d'images
-const sharpImg = require('../middleware/sharp-config');
+const resizedImage = require('../middleware/sharp-config')
 
 // logique métier
 const booksCtrl = require('../controllers/books');
 
 // différentes routes concernant les livres
-router.get('/bestrating', booksCtrl.getBestRating);
-router.get('/', multer,booksCtrl.getAllBooks);
-router.post('/', auth, multer, sharpImg, booksCtrl.postBook);
-router.get('/:id', multer,booksCtrl.getOneBook);
+router.get('/', booksCtrl.getAllBooks);
+router.post('/', auth, multer,resizedImage ,booksCtrl.postBook);
+router.get('/:id', booksCtrl.getOneBook);
 router.put('/:id', auth, multer, booksCtrl.modifyBook);
 router.delete('/:id',auth, booksCtrl.deleteBook);
 module.exports = router;  

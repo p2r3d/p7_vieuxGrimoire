@@ -4,8 +4,9 @@ const fs = require('fs');
 
 // POST : création d'un livre
 exports.postBook = (req, res, next) => {
-
-  console.log(' create book');
+/*  console.log('dans POST');
+console.log('dans POST : req.file.filename ',req.file.filename);
+console.log('dans POST : req.file.path ',req.file.path);*/
   // le formdata de la requête est transformé en json
     const bookObject = JSON.parse(req.body.book);
 
@@ -19,8 +20,10 @@ exports.postBook = (req, res, next) => {
     const book = new Book({
         ...bookObject,
         userId: req.auth.userId,
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        imageUrl: `${req.protocol}://${req.get('host')}/${req.file.path}`
     });
+    console.log('imageUrl dans post',book.imageUrl);
+
     // Enregistrement dans la base de données
     book.save()
         .then(() => { res.status(201).json({ message: 'Livre enregistré !' }) })
@@ -74,12 +77,17 @@ exports.deleteBook = (req, res, next) => {
 // GET : affichage d'un livre sélectionné
 exports.getOneBook = (req, res, next) => {
   Book.findOne({ _id: req.params.id })
-    .then((book) => { res.status(200).json(book); })
+    .then((book) => { res.status(200).json(book); console.log('book',book)})
     .catch((error) => {res.status(404).json({error: error});});
 };
 
 // GET : affichage de tous les livres
 exports.getAllBooks = (req, res, next) => {
+/*    console.log('pzth image dans getALlBooks', req.file.path);
+    console.log('filename image dans getALlBooks', req.file.filename);
+        console.log('req.filemanme image dans getALlBooks', req.filename);
+*/
+
   // récupération de tous les livres de la BD
   Book.find()
     .then((books) => {res.status(200).json(books);})
@@ -89,7 +97,7 @@ exports.getAllBooks = (req, res, next) => {
 // GET : affichage des livres les mieux notés
 exports.getBestRating = (req, res, next) => {
   // recherche dans la base de données, tri en ordre décroissant et limité à 3 résultats
-  Book.find().sort({ averageRating: -1 }).limit(3)
+  Book.find().sort({ averageRating: 1 }).limit(3)
   .then ((books) => {res.status(200).json(books);})
   .catch((error) => {res.status(400).json({error: error});});
 }
