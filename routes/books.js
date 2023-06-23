@@ -15,7 +15,8 @@ const booksCtrl = require('../controllers/books');
 // différentes routes concernant les livres
 router.get('/', booksCtrl.getAllBooks);
 router.post('/', auth, multer,resizedImage ,booksCtrl.postBook);
+router.get('/bestrating', booksCtrl.getBestRating);
 router.get('/:id', booksCtrl.getOneBook);
-router.put('/:id', auth, multer, booksCtrl.modifyBook);
+router.put('/:id', auth, multer,resizedImage, booksCtrl.modifyBook);
 router.delete('/:id',auth, booksCtrl.deleteBook);
 module.exports = router;  
