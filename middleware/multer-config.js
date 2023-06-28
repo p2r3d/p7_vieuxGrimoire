@@ -1,5 +1,7 @@
-// gestion des fichiers upload
+// middleware de gestion des fichiers upload
 const multer = require('multer');
+
+// pour la détermination des images uploadées
 const MIME_TYPES = {
   'image/jpg': 'jpg',
   'image/jpeg': 'jpg',

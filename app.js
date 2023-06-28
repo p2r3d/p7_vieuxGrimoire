@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const path = require('path');
 const mongoose = require('mongoose');
 // import des modèles
@@ -15,10 +14,9 @@ mongoose.connect('mongodb+srv://pac:jddMupNpRnnVFKVK@cluster0.xfinhde.mongodb.ne
   // création de l'application
   const app = express();
 
-
-// middleware général(sans route spécifiée) appliqué partout, erreur cors
-app.use((req, res, next) => {
-    // Accès à notre API depuis n'importe quelle origine
+  // middleware général(sans route spécifiée) appliqué partout, erreur cors
+  app.use((req, res, next) => {
+    // Accès l'API depuis n'importe quelle origine
     res.setHeader('Access-Control-Allow-Origin', '*');
     // Autorisation d'ajouter les headers mentionnés aux requêtes envoyées vers notre API
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
