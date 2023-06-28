@@ -1,3 +1,5 @@
+// import des variables d'environnement
+require("dotenv").config();
 const http = require('http');
 const app = require('./app');
 
@@ -13,7 +15,7 @@ const normalizePort = val => {
   }
   return false;
 };
-const port = normalizePort(process.env.PORT || '4000');
+const port = normalizePort(process.env.PORT);
 app.set('port', port);
 
 const errorHandler = error => {

@@ -44,7 +44,7 @@ exports.login = (req, res, next) => {
         userId: user._id,
         token: jwt.sign( // token généré, contient id user + signé avec clé secrète
 				  {userId:user._id}, // payload = données que l'on veut encoder
-				  'RANDOM_TOKEN_SECRET',	// clé secrète pour l'encodage
+				  process.env.SECRET_KEY,	// clé secrète pour l'encodage
 					{expiresIn: '24h'} // délai
 				)
       });             

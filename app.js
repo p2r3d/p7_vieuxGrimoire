@@ -6,7 +6,9 @@ const booksRoutes = require('./routes/books');
 const userRoutes = require('./routes/user');
 
   // connexion à la base de données
-mongoose.connect('mongodb+srv://pac:jddMupNpRnnVFKVK@cluster0.xfinhde.mongodb.net/',
+ // mongoose.connect('mongodb+srv://pac:jddMupNpRnnVFKVK@cluster0.xfinhde.mongodb.net/',
+console.log('process.env.DB_URL',process.env.DB_URL);
+mongoose.connect(process.env.DB_URL,
   { useNewUrlParser: true,    useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
