@@ -1,4 +1,4 @@
-// extrait les infos contenues dans le token, vérifier qu'il est valide, pour les transmettre 
+// extrait les infos contenues dans le token, vérifie qu'il est valide, pour les transmettre 
 // aux gestionnaires de routes
 
 const jwt = require('jsonwebtoken');

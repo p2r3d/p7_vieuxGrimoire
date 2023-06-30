@@ -8,7 +8,8 @@ const fs = require('fs');
 const {calculateAverage} = require('../utils/average');
 
 // requête POST : création d'un livre
-exports.postBook = (req, res, next) => {
+exports.postBook = async(req, res, next) => {
+  try {
   // le formdata de la requête est transformé en json
     const bookObject = JSON.parse(req.body.book);
 
@@ -27,37 +28,39 @@ exports.postBook = (req, res, next) => {
     });
 
     // Enregistrement dans la base de données avec la méthode save de Mongoose
-    book.save()
-        .then(() => { res.status(201).json({ message: 'Livre créé !' }) })
-        .catch(error => { res.status(400).json( { error }) }) // mauvaise requête
-};
+    await book.save();
+    res.status(201).json({ message: 'Livre créé !' });
+  }
+  catch(error) {
+     res.status(400).json({error})
+  }
+}
 
 // PUT : modification d'un livre sélectionné
-exports.modifyBook = (req, res, next) => {
-  // on vérifie s'il y a un fichier image attaché à la requête
-  // si oui création d'un nouvel objet avec maj image 
-  const bookObject = req.file ? {
-    ...JSON.parse(req.body.book),
-    imageUrl: `${req.protocol}://${req.get('host')}/${req.file.path}`
-  } : { ...req.body }; // sinon on copie le body de la requête dans bookObject
- 
-  delete bookObject._userId;
-  // si l'id existe dans la BD 
-  Book.findOne({_id: req.params.id})
-    .then((book) => {
-      if (book.userId != req.auth.userId) {
-        res.status(401).json({ message : 'Not authorized'}); //
-      } else {
-        // mise à jour du livre
-        Book.updateOne({ _id: req.params.id}, { ...bookObject, _id: req.params.id})
-        .then(() => res.status(200).json({message : 'Livre modifié!'}))
-        .catch(error => res.status(401).json({ error }));
-      }
-    })
-    .catch((error) => {
-      res.status(400).json({ error });
-  });
-};
+exports.modifyBook = async(req, res, next) => {
+  try {
+    // on vérifie s'il y a un fichier image attaché à la requête
+    // si oui création d'un nouvel objet avec maj image 
+    const bookObject = req.file ? {
+      ...JSON.parse(req.body.book),
+      imageUrl: `${req.protocol}://${req.get('host')}/${req.file.path}`
+    } : { ...req.body }; // sinon on copie le body de la requête dans bookObject
+  
+    delete bookObject._userId;
+    // si l'id existe dans la BD 
+    const book = await Book.findOne({_id: req.params.id});
+    if (book.userId != req.auth.userId) {
+      res.status(401).json({ message : 'Not authorized'}); //
+    } else {
+    // mise à jour du livre
+    await Book.updateOne({ _id: req.params.id}, { ...bookObject, _id: req.params.id});
+    res.status(200).json({message : 'Livre modifié!'});
+    }
+  }
+  catch(error) {
+    res.status(400).json({ error });
+  }
+}
 
 // DELETE : suppression d'un livre
 exports.deleteBook = (req, res, next) => {
@@ -120,11 +123,12 @@ exports.rateBook = (req, res, next) => {
     const userRatings = book.ratings;
 
     // Vérification de l'unicité du vote pour l'utilisateur connecté
-    const everVoted = userRatings.find((rating) => rating.userId === req.auth.userId)
-    if (everVoted) {
+    const hasVoted = userRatings.find((rating) => rating.userId === req.auth.userId)
+    if (hasVoted) {
       res.status(403).json({ message : 'Vous avez déjà voté pour ce livre' });
+      return;
     }
-    else {
+    
     // Ajout de la note
     userRatings.push(ratingObject);
      // Tableau des notes du livre
@@ -140,7 +144,7 @@ exports.rateBook = (req, res, next) => {
     .catch(error => { res.status(400).json( { error })});
         res.status(200).json(book);
     }
-  })
+  )
   .catch((error) => {
     res.status(404).json({ error });
   });
