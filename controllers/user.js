@@ -1,31 +1,40 @@
 //****Middlewares d'authentification
 const User = require ('../models/User');
-
 const bcrypt = require ('bcrypt');
 
 // création et vérification des tokens
 const jwt = require ('jsonwebtoken');
 
-// enregistrement des utilisateurs
+// enregistrement des users
 exports.signup = (req, res, next) => {
-  // méthode asynchrone du cryptage du mdp, sault de 10 tours
-	bcrypt.hash(req.body.password, 10)
-    .then(hash => {
-      const user = new User({
-        email: req.body.email,
-        password: hash
-      });
-      // enregistrement dans la BD
-      user.save()
-        .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
-        .catch(error => res.status(400).json( { error } ));
+  // On vérifie que l'email n'existe pas dans la BD
+  User.findOne({ email: req.body.email })
+    .then(user => {
+      if (user) {
+        // email existant
+        return res.status(401).json({ message: 'Cet email existe déjà dans la base de données' });
+      } else {
+        // hachage du mdp 
+        bcrypt.hash(req.body.password, 10)
+          .then(hash => {
+            const user = new User({
+              email: req.body.email,
+              password: hash
+            });
+            // Enregistrement dans la base de données
+            user.save()
+              .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
+              .catch(error => res.status(400).json({ error }));
+          })
+          .catch(error => res.status(500).json({ error }));
+      }
     })
-    .catch(error => res.status(500).json({ error })); // erreur 500 serveur
+    .catch(error => res.status(500).json({ error }));
 };
 
 // connexion des utilisateurs existants
 exports.login = (req, res, next) => {
-  // on tuilise la méthode findOne de Mogoose pour trouver un user qui possède l'email de la requête
+  // on utilise la méthode findOne de Mogoose pour trouver un user qui possède l'email de la requête
   User.findOne({ email: req.body.email })
   .then(user => {
     // pas de user trouvé
