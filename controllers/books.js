@@ -13,6 +13,13 @@ exports.postBook = async(req, res, next) => {
   // le formdata de la requête est transformé en json
     const bookObject = JSON.parse(req.body.book);
 
+    //vérification de la date de publication du livre
+    const publicationYear = parseInt(bookObject.year);
+    const currentYear = new Date().getFullYear();
+    if (bookObject.year > currentYear || isNaN(publicationYear)) {
+      return res.status(400).json("Année de publication invalide");
+    }
+
     // Suppression de l'id envoyé par le front (un nouvel id sera généré avec mongo)
     delete bookObject._id;
 
@@ -52,9 +59,16 @@ exports.modifyBook = async(req, res, next) => {
     if (book.userId != req.auth.userId) {
       res.status(401).json({ message : 'Not authorized'}); //
     } else {
-    // mise à jour du livre
-    await Book.updateOne({ _id: req.params.id}, { ...bookObject, _id: req.params.id});
-    res.status(200).json({message : 'Livre modifié!'});
+      //vérification de la date de publication du livre
+      const publicationYear = parseInt(bookObject.year);
+      const currentYear = new Date().getFullYear();
+      if (bookObject.year > currentYear || isNaN(publicationYear)) {
+        return res.status(400).json("Année de publication invalide");
+      }
+
+      // mise à jour du livre
+      await Book.updateOne({ _id: req.params.id}, { ...bookObject, _id: req.params.id});
+      res.status(200).json({message : 'Livre modifié!'});
     }
   }
   catch(error) {

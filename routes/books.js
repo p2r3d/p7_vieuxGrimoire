@@ -10,7 +10,7 @@ const multer = require('../middleware/multer-config');
 const resizedImage = require('../middleware/sharp-config')
 
 // logique métier
-const booksCtrl = require('../controllers/books');
+const booksCtrl = require('../controllers/books.js');
 
 // différentes routes concernant les livres
 router.get('/', booksCtrl.getAllBooks);
